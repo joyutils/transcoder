@@ -1,0 +1,35 @@
+{
+  "name": "@joyutils/transcoder-api",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "db:generate": "bunx drizzle-kit generate --dialect sqlite --schema ./src/db/schema.ts",
+    "db:migrate": "bun run migrate.ts",
+    "db:reset": "rimraf drizzle && rimraf sqlite.db",
+    "db:fullreset": "bun run db:reset && bun run db:generate && bun run db:migrate",
+    "uploads:clean": "rimraf uploads",
+    "dev": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.25.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.1.1",
+    "@joystream/metadata-protobuf": "^2.16.0",
+    "@joystream/types": "^4.6.0",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
+    "blake3": "2.1.7",
+    "drizzle-orm": "^0.34.1",
+    "elysia": "^1.1.20",
+    "express": "^4.21.1",
+    "file-type": "^18.2.1",
+    "multer": "^1.4.5-lts.1",
+    "multihashes": "^4.0.3",
+    "rimraf": "^6.0.1"
+  }
+}
