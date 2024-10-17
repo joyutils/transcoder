@@ -2,11 +2,11 @@ import { Worker } from "./worker";
 import { db } from "./db";
 import { jobs } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { ApiPromise, HttpProvider } from "@polkadot/api";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 import { Keyring } from "@polkadot/keyring";
 import { type KeyringPair } from "@polkadot/keyring/types";
 import { prepareUpdateVideoTx, submitExtrinsic } from "./js-api";
-import { CHAIN_HTTP_RPC_URL, TRANSACTOR_ACCOUNT_MNEMONIC } from "./config";
+import { CHAIN_WS_RPC_URL, TRANSACTOR_ACCOUNT_MNEMONIC } from "./config";
 
 export class ChainWorker extends Worker {
   private api: ApiPromise;
@@ -20,7 +20,7 @@ export class ChainWorker extends Worker {
   }
 
   static async init(): Promise<ChainWorker> {
-    const provider = new HttpProvider(CHAIN_HTTP_RPC_URL);
+    const provider = new WsProvider(CHAIN_WS_RPC_URL);
     const api = await ApiPromise.create({ provider });
     await api.isReady;
     return new ChainWorker(api);
@@ -38,6 +38,7 @@ export class ChainWorker extends Worker {
     try {
       const tx = await prepareUpdateVideoTx(this.api, {
         videoId: job.video.id,
+        channelId: job.video.channelId,
         media: {
           size: job.processedFileSize!,
           ipfsHash: job.hash!,
@@ -54,11 +55,7 @@ export class ChainWorker extends Worker {
         throw new Error("Failed to prepare transaction");
       }
 
-      const result = await submitExtrinsic(
-        tx,
-        this.account,
-        CHAIN_HTTP_RPC_URL
-      );
+      const result = await submitExtrinsic(tx, this.account, CHAIN_WS_RPC_URL);
 
       this.log(
         `Asset created on-chain for job ${job.id}. Transaction hash: ${result.transactionHash}`

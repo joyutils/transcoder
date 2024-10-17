@@ -4,7 +4,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 type JobStatus = {
   id: string
-  fileSize: number
+  originalFileSize: number
+  processedFileSize: number
+  hash: string
   status: string
   createdAt: string
   updatedAt: string
@@ -79,7 +81,9 @@ const SingleVideoJobStatus: FC<{ videoId: string }> = ({ videoId }) => {
     <div className="mt-4">
       <h3 className="font-semibold">{jobType} Job Status:</h3>
       <p>Status: {job.status}</p>
-      <p>File Size: {job.fileSize} bytes</p>
+      <p>Original File Size: {job.originalFileSize} bytes</p>
+      <p>Processed File Size: {job.processedFileSize} bytes</p>
+      <p>Hash: {job.hash}</p>
       <p>Created At: {new Date(job.createdAt).toLocaleString()}</p>
       <p>Updated At: {new Date(job.updatedAt).toLocaleString()}</p>
     </div>

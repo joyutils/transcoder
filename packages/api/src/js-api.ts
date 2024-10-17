@@ -113,6 +113,7 @@ export function submitExtrinsic(
 
 type UpdateVideoInput = {
   videoId: string;
+  channelId: string;
   media?: {
     size: number;
     ipfsHash: string;
@@ -148,7 +149,7 @@ export async function prepareUpdateVideoTx(
   });
 
   const properties: IVideoMetadata = {};
-  let asset: Option<PalletContentStorageAssetsRecord> | undefined;
+  let assetsRecord: Option<PalletContentStorageAssetsRecord> | undefined;
 
   if (input.media) {
     properties.mediaPixelHeight = input.media.height;
@@ -162,7 +163,11 @@ export async function prepareUpdateVideoTx(
     properties.mediaType = mediaTypeProperties;
     properties.video = 0;
 
-    asset = await prepareAssetForExtrinsic(api, input.media);
+    assetsRecord = await prepareAssetForExtrinsic(api, input.media);
+  }
+
+  if (input.thumbnail) {
+    properties.thumbnailPhoto = 0;
   }
 
   const rawMetadata = ContentMetadata.encode({
@@ -170,13 +175,18 @@ export async function prepareUpdateVideoTx(
   }).finish();
   const metadata = wrapMetadata(rawMetadata);
 
+  const [stateBloatBond, channelBag] = await Promise.all([
+    api.query.storage.dataObjectStateBloatBondValue(),
+    api.query.storage.bags({ Dynamic: { Channel: input.channelId } }),
+  ]);
+
   const updateParams = createType("PalletContentVideoUpdateParametersRecord", {
-    assetsToUpload: asset,
+    assetsToUpload: assetsRecord,
     newMeta: metadata,
     assetsToRemove: [],
     autoIssueNft: null,
-    expectedDataObjectStateBloatBond: 0,
-    storageBucketsNumWitness: 0,
+    expectedDataObjectStateBloatBond: stateBloatBond,
+    storageBucketsNumWitness: channelBag.storedBy.size,
   });
 
   return api.tx.content.updateVideo(actor, input.videoId, updateParams);

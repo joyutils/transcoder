@@ -11,6 +11,7 @@ export const PENDING_UPLOAD_DIR = path.join(MAIN_UPLOADS_DIR, "pending-upload");
 await mkdir(PENDING_PROCESSING_DIR, { recursive: true });
 await mkdir(PENDING_UPLOAD_DIR, { recursive: true });
 
+export const CHAIN_WS_RPC_URL = "wss://rpc.joyutils.org";
 export const CHAIN_HTTP_RPC_URL = "https://rpc.joyutils.org/http";
 
 const RAW_TRANSACTOR_MEMBER_ID = process.env.TRANSACTOR_MEMBER_ID;

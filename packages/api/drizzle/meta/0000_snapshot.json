@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ea25f7c8-5d24-413d-981e-e29b8f6d8c22",
+  "id": "c51dddbe-7c89-42cb-8c5e-7d422ce83c81",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "jobs": {
@@ -128,6 +128,13 @@
           "name": "id",
           "type": "text",
           "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "channel_id": {
+          "name": "channel_id",
+          "type": "text",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },

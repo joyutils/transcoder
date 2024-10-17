@@ -67,22 +67,25 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
   const uploadMutation = useMutation({
     mutationFn: async ({
       videoId,
+      channelId,
       thumbnailFile,
       videoFile,
     }: {
       videoId: string
+      channelId: string
       thumbnailFile: File
       videoFile: File
     }) => {
       const formData = new FormData()
       formData.append('videoId', videoId)
+      formData.append('channelId', channelId)
       formData.append('thumbnail', thumbnailFile)
       formData.append('media', videoFile)
 
       const xhr = new XMLHttpRequest()
       xhr.open('POST', 'http://localhost:3001/video')
 
-      return new Promise((resolve, reject) => {
+      return new Promise<{ videoId: string }>((resolve, reject) => {
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
             const percentComplete = (event.loaded / event.total) * 100
@@ -154,6 +157,7 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
     setUploadStatus('Uploading...')
     uploadMutation.mutate({
       videoId: selectedVideoId,
+      channelId,
       thumbnailFile,
       videoFile,
     })

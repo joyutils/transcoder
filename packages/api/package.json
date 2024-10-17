@@ -18,17 +18,11 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.1.1",
     "@joystream/metadata-protobuf": "^2.16.0",
     "@joystream/types": "^4.6.0",
-    "@types/express": "^5.0.0",
-    "@types/multer": "^1.4.12",
     "blake3": "2.1.7",
     "drizzle-orm": "^0.34.1",
-    "elysia": "^1.1.20",
-    "express": "^4.21.1",
     "file-type": "^18.2.1",
-    "multer": "^1.4.5-lts.1",
     "multihashes": "^4.0.3",
     "rimraf": "^6.0.1"
   }

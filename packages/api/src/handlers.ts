@@ -42,6 +42,7 @@ async function handleUpload(req: Request): Promise<Response> {
   try {
     const formData = await req.formData();
     const videoId = formData.get("videoId") as string;
+    const channelId = formData.get("channelId") as string;
     const mediaFile = formData.get("media") as File | null;
     const thumbnailFile = formData.get("thumbnail") as File | null;
 
@@ -81,6 +82,7 @@ async function handleUpload(req: Request): Promise<Response> {
       id: videoId,
       thumbnailJobId,
       mediaJobId,
+      channelId,
     });
 
     return Response.json({

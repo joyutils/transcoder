@@ -17,6 +17,7 @@ CREATE TABLE `jobs` (
 --> statement-breakpoint
 CREATE TABLE `videos` (
 	`id` text PRIMARY KEY NOT NULL,
+	`channel_id` text NOT NULL,
 	`thumbnail_job_id` text NOT NULL,
 	`media_job_id` text NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,

@@ -2,4 +2,4 @@
 import { db } from "./src/db";
 import { jobs } from "./src/db/schema";
 
-await db.update(jobs).set({ status: "pending_processing" });
+await db.update(jobs).set({ status: "creating_asset" });
