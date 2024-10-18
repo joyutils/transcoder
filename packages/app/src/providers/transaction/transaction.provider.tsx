@@ -191,8 +191,8 @@ export const TransactionProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const { unsubscribe } = subscription.subscribe({
       next: (data) => {
-        const lastCompleteBlock =
-          data?.data?.stateSubscription?.lastCompleteBlock
+        const lastCompleteBlock = (data?.data?.stateSubscription as any)
+          ?.lastCompleteBlock as number | undefined
 
         if (lastCompleteBlock && lastCompleteBlock >= result.blockNumber) {
           unsubscribe()

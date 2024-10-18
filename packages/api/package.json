@@ -28,6 +28,7 @@
     "graphql": "^16.9.0",
     "graphql-request": "5",
     "multihashes": "^4.0.3",
+    "nanoid": "^5.0.7",
     "rimraf": "^6.0.1"
   }
 }

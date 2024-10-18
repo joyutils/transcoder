@@ -91,7 +91,7 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channel }) => {
       formData.append('channelId', channelId)
       formData.append('thumbnail', thumbnailFile)
       formData.append('media', videoFile)
-      formData.append('signature', `${signature}a`)
+      formData.append('signature', signature)
       formData.append('timestamp', timestamp.toString())
 
       const xhr = new XMLHttpRequest()

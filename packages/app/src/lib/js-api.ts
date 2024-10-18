@@ -39,6 +39,7 @@ export async function prepareSetChannelCollaboratorTx(
     'Option<BTreeMap<u64, BTreeSet<PalletContentIterableEnumsChannelActionPermission>>>',
     createType(
       'BTreeMap<u64, BTreeSet<PalletContentIterableEnumsChannelActionPermission>>',
+      // @ts-ignore
       collaboratorsMap
     )
   )
