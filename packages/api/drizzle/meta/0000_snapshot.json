@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "95d6bf3f-f1b4-45a0-b22f-8fbaf628bdf5",
+  "id": "ed029621-a2c9-4606-8ce8-34558260e623",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "jobs": {
@@ -55,10 +55,17 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'pending_processing'"
+          "default": "'processing'"
         },
         "hash": {
           "name": "hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_object_id": {
+          "name": "data_object_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -165,8 +172,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(current_timestamp)"
+          "autoincrement": false
         }
       },
       "indexes": {},

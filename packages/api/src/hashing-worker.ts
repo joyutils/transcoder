@@ -30,7 +30,10 @@ export class HashingWorker extends Worker {
 
       await db
         .update(jobs)
-        .set({ hash, status: "creating_asset" })
+        .set({
+          hash,
+          status: "creating_asset",
+        })
         .where(eq(jobs.id, hashingJob.id));
 
       const endTime = performance.now();
@@ -40,7 +43,9 @@ export class HashingWorker extends Worker {
       this.error(`Error hashing job ${hashingJob.id}:`, error);
       await db
         .update(jobs)
-        .set({ status: "failed" })
+        .set({
+          status: "failed",
+        })
         .where(eq(jobs.id, hashingJob.id));
     }
   }

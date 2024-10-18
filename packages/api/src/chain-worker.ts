@@ -68,19 +68,40 @@ export class ChainWorker extends Worker {
 
       const result = await submitExtrinsic(tx, this.account, CHAIN_WS_RPC_URL);
 
+      const dataObjectsEvent = result.events.find(
+        (event) =>
+          event.section === "storage" && event.method === "DataObjectsUpdated"
+      );
+
+      if (!dataObjectsEvent) {
+        throw new Error("Failed to get data objects event");
+      }
+
+      const dataObjectIds = [...dataObjectsEvent.data[1]];
+      const dataObjectId = dataObjectIds[0].toBigInt();
+
+      if (!dataObjectId) {
+        throw new Error("Failed to get data object id");
+      }
+
       this.log(
         `Asset created on-chain for job ${job.id}. Transaction hash: ${result.transactionHash}`
       );
 
       await db
         .update(jobs)
-        .set({ status: "pending_upload" })
+        .set({
+          status: "uploading",
+          dataObjectId: dataObjectId.toString(),
+        })
         .where(eq(jobs.id, job.id));
     } catch (error) {
       this.error(`Error creating asset for job ${job.id}:`, error);
       await db
         .update(jobs)
-        .set({ status: "failed" })
+        .set({
+          status: "failed",
+        })
         .where(eq(jobs.id, job.id));
     }
   }

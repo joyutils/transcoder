@@ -23,20 +23,24 @@ export async function prepareSetChannelCollaboratorTx(
   api: ApiPromise,
   input: SetChannelCollaboratorInput
 ) {
-  const collaboratorsMap = input.existingCollaborators.reduce(
-    (acc, collaborator) => {
-      acc[parseInt(collaborator.memberId)] = collaborator.permissions
-      return acc
-    },
-    {} as Record<number, string[]>
-  )
+  // const collaboratorsMap = input.existingCollaborators.reduce(
+  //   (acc, collaborator) => {
+  //     acc[parseInt(collaborator.memberId)] = collaborator.permissions
+  //     return acc
+  //   },
+  //   {} as Record<number, string[]>
+  // )
+  const collaboratorsMap = {} as Record<number, string[]>
   collaboratorsMap[TRANSACTOR_MEMBER_ID] = [
     'UpdateVideoMetadata',
     'ManageVideoAssets',
   ]
   const collaborators = createType(
     'Option<BTreeMap<u64, BTreeSet<PalletContentIterableEnumsChannelActionPermission>>>',
-    collaboratorsMap
+    createType(
+      'BTreeMap<u64, BTreeSet<PalletContentIterableEnumsChannelActionPermission>>',
+      collaboratorsMap
+    )
   )
   return api.tx.content.updateChannel(
     createType('PalletContentPermissionsContentActor', {

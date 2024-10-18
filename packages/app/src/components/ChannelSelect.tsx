@@ -53,7 +53,6 @@ export const ChannelSelect: FC<ChannelSelectProps> = ({
       tx,
       selectedChannel.ownerMember!.controllerAccount,
       () => {
-        console.log('invalidating')
         queryClient.invalidateQueries({ queryKey: ['channels'] })
       }
     )
@@ -73,6 +72,7 @@ export const ChannelSelect: FC<ChannelSelectProps> = ({
             This channel does not have proper collaborator permissions set up.
             Please add the transcoder service transactor member as a channel
             collaborator to allow it to publish on-chain assets on your behalf.
+            If you've already added the collaborator, please refresh the page.
           </p>
           <Button onClick={handleAddCollaborator}>Add collaborator</Button>
         </AlertDescription>

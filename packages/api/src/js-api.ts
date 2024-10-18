@@ -3,6 +3,7 @@ import { type SubmittableExtrinsic } from "@polkadot/api/types";
 import { type KeyringPair } from "@polkadot/keyring/types";
 import { type Signer } from "@polkadot/types/types";
 import { Bytes, Option } from "@polkadot/types";
+import { type Event } from "@polkadot/types/interfaces/system";
 import {
   ContentMetadata,
   type IMediaType,
@@ -23,7 +24,7 @@ export type ExtrinsicStatusCallbackFn = (
 ) => void;
 
 export type RawExtrinsicResult = {
-  events: string[];
+  events: Event[];
   blockHash: string;
   transactionHash: string;
 };
@@ -73,12 +74,15 @@ export function submitExtrinsic(
       if (status.isInBlock) {
         unsub();
 
-        const events = rawEvents.map((record) => {
-          const { event } = record;
-          return `${event.section}.${event.method}`;
-        });
+        // rawEvents[0].event.
 
-        if (events.includes("system.ExtrinsicFailed")) {
+        const events = rawEvents.map(({ event }) => event);
+
+        const failedEvent = events.find(
+          (event) =>
+            event.section === "system" && event.method === "ExtrinsicFailed"
+        );
+        if (failedEvent) {
           reject(
             new Error(
               `ExtrinsicFailed: https://polkadot.js.org/apps/?rpc=${encodeURI(
@@ -145,7 +149,7 @@ export async function prepareUpdateVideoTx(
   }
 
   const actor = createType("PalletContentPermissionsContentActor", {
-    Member: TRANSACTOR_MEMBER_ID,
+    Member: Number(TRANSACTOR_MEMBER_ID),
   });
 
   const properties: IVideoMetadata = {};

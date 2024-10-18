@@ -15,7 +15,7 @@ export class TranscodingWorker extends Worker {
   }
 
   protected async processNextJob(): Promise<void> {
-    const pendingJob = await this.getNextJob("pending_processing");
+    const pendingJob = await this.getNextJob("processing");
 
     if (!pendingJob) {
       return;
@@ -26,11 +26,6 @@ export class TranscodingWorker extends Worker {
     this.log(`Transcoding job ${pendingJob.id}`);
 
     try {
-      await db
-        .update(jobs)
-        .set({ status: "processing" })
-        .where(eq(jobs.id, pendingJob.id));
-
       const inputPath = path.join(PENDING_PROCESSING_DIR, pendingJob.fileName);
       const outputPath = path.join(PENDING_UPLOAD_DIR, `${pendingJob.id}.mp4`);
 

@@ -13,14 +13,11 @@ await mkdir(PENDING_UPLOAD_DIR, { recursive: true });
 
 export const CHAIN_WS_RPC_URL = "wss://rpc.joyutils.org";
 export const CHAIN_HTTP_RPC_URL = "https://rpc.joyutils.org/http";
+export const QN_URL = "https://query.joyutils.org/graphql";
 
-const RAW_TRANSACTOR_MEMBER_ID = process.env.TRANSACTOR_MEMBER_ID;
-if (!RAW_TRANSACTOR_MEMBER_ID) {
+export const TRANSACTOR_MEMBER_ID = process.env.TRANSACTOR_MEMBER_ID as string;
+if (!TRANSACTOR_MEMBER_ID) {
   throw new Error("TRANSACTOR_MEMBER_ID is not set");
-}
-export const TRANSACTOR_MEMBER_ID = parseInt(RAW_TRANSACTOR_MEMBER_ID);
-if (isNaN(TRANSACTOR_MEMBER_ID)) {
-  throw new Error("TRANSACTOR_MEMBER_ID is not a number");
 }
 
 export const TRANSACTOR_ACCOUNT_MNEMONIC = process.env

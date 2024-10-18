@@ -5,8 +5,9 @@ CREATE TABLE `jobs` (
 	`file_size` integer NOT NULL,
 	`processed_file_size` integer,
 	`file_type` text NOT NULL,
-	`status` text DEFAULT 'pending_processing' NOT NULL,
+	`status` text DEFAULT 'processing' NOT NULL,
 	`hash` text,
+	`data_object_id` text,
 	`duration` integer,
 	`height` integer,
 	`width` integer,
@@ -21,5 +22,5 @@ CREATE TABLE `videos` (
 	`thumbnail_job_id` text NOT NULL,
 	`media_job_id` text NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
-	`updated_at` text DEFAULT (current_timestamp) NOT NULL
+	`updated_at` text NOT NULL
 );

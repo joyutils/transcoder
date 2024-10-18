@@ -4,7 +4,12 @@ import { videos, jobs } from "./db/schema";
 import { nanoid } from "nanoid";
 import path from "node:path";
 import { fileTypeFromBuffer } from "file-type";
-import { PENDING_PROCESSING_DIR, PENDING_UPLOAD_DIR } from "./config";
+import {
+  PENDING_PROCESSING_DIR,
+  PENDING_UPLOAD_DIR,
+  TRANSACTOR_MEMBER_ID,
+} from "./config";
+import { checkChannelCollaborator } from "./qn-api";
 
 export async function handleRequest(req: Request): Promise<Response> {
   const response = await getResponse(req);
@@ -50,6 +55,15 @@ async function handleUpload(req: Request): Promise<Response> {
       return Response.json(
         {
           message: "Both media and thumbnail files are required as form data.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!(await checkChannelCollaborator(channelId))) {
+      return Response.json(
+        {
+          message: `This channel does not have the transactor (${TRANSACTOR_MEMBER_ID}) as a collaborator.`,
         },
         { status: 400 }
       );
@@ -166,7 +180,7 @@ async function processAndSaveFile(
 
   await Bun.write(filePath, file);
 
-  const initialStatus = fileType === "media" ? "pending_processing" : "hashing";
+  const initialStatus = fileType === "media" ? "processing" : "hashing";
 
   const [job] = await db
     .insert(jobs)

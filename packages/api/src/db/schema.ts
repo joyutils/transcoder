@@ -11,7 +11,7 @@ export const videos = sqliteTable("videos", {
     .default(sql`(current_timestamp)`),
   updatedAt: text("updated_at")
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .$onUpdate(() => sql`(current_timestamp)`),
 });
 
 export const videosRelations = relations(videos, ({ one }) => ({
@@ -36,19 +36,18 @@ export const jobs = sqliteTable("jobs", {
   fileType: text("file_type", { enum: ["media", "thumbnail"] }).notNull(),
   status: text("status", {
     enum: [
-      "pending_processing",
       "processing",
       "hashing",
       "creating_asset",
-      "pending_upload",
       "uploading",
       "completed",
       "failed",
     ],
   })
     .notNull()
-    .default("pending_processing"),
+    .default("processing"),
   hash: text("hash"),
+  dataObjectId: text("data_object_id"),
   duration: integer("duration"),
   height: integer("height"),
   width: integer("width"),
@@ -57,7 +56,8 @@ export const jobs = sqliteTable("jobs", {
     .default(sql`(current_timestamp)`),
   updatedAt: text("updated_at")
     .notNull()
-    .default(sql`(current_timestamp)`),
+    .default(sql`(current_timestamp)`)
+    .$onUpdate(() => sql`(current_timestamp)`),
 });
 
 export const jobsRelations = relations(jobs, ({ one }) => ({
