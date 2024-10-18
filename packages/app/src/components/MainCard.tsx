@@ -106,7 +106,7 @@ export const MainCard: FC = () => {
             <NewVideoTab channel={channel} />
           </TabsContent>
           <TabsContent value="upload-assets">
-            <UploadAssetsTab channelId={channel.id} />
+            <UploadAssetsTab channel={channel} />
           </TabsContent>
           <TabsContent value="job-status">
             {uploadedVideoIds.length > 0 ? (

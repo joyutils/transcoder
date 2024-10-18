@@ -5,7 +5,7 @@
   "scripts": {
     "db:generate": "bunx drizzle-kit generate --dialect sqlite --schema ./src/db/schema.ts",
     "db:migrate": "bun run migrate.ts",
-    "db:reset": "rimraf drizzle && rimraf sqlite.db",
+    "db:reset": "rimraf drizzle && rimraf data/sqlite.db",
     "db:fullreset": "bun run db:reset && bun run db:generate && bun run db:migrate",
     "uploads:clean": "rimraf uploads",
     "codegen": "graphql-codegen",

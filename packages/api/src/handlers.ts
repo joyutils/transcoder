@@ -9,7 +9,7 @@ import {
   PENDING_UPLOAD_DIR,
   TRANSACTOR_MEMBER_ID,
 } from "./config";
-import { checkChannelCollaborator } from "./qn-api";
+import { verifyChannelPermissionsAndSignature } from "./qn-api";
 
 export async function handleRequest(req: Request): Promise<Response> {
   const response = await getResponse(req);
@@ -48,6 +48,8 @@ async function handleUpload(req: Request): Promise<Response> {
     const formData = await req.formData();
     const videoId = formData.get("videoId") as string;
     const channelId = formData.get("channelId") as string;
+    const signature = formData.get("signature") as string;
+    const timestamp = formData.get("timestamp") as string;
     const mediaFile = formData.get("media") as File | null;
     const thumbnailFile = formData.get("thumbnail") as File | null;
 
@@ -60,10 +62,18 @@ async function handleUpload(req: Request): Promise<Response> {
       );
     }
 
-    if (!(await checkChannelCollaborator(channelId))) {
+    const validPermissionsAndSignature =
+      await verifyChannelPermissionsAndSignature({
+        channelId,
+        videoId,
+        signature,
+        timestamp: parseInt(timestamp),
+      });
+
+    if (!validPermissionsAndSignature) {
       return Response.json(
         {
-          message: `This channel does not have the transactor (${TRANSACTOR_MEMBER_ID}) as a collaborator.`,
+          message: `No collaborator permissions or invalid signature.`,
         },
         { status: 400 }
       );

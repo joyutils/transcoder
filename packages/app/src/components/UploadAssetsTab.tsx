@@ -18,6 +18,9 @@ import { ThumbnailCropDialog } from './ThumbnailCropDialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
 import { useUploadedVideosStore } from '@/stores/uploadedVideosStore'
+import { useJoystreamWallets } from '@/providers/wallet'
+import { GetUserChannelsQuery } from '@/gql/graphql'
+import { stringToU8a, u8aToHex } from '@polkadot/util'
 
 const getChannelVideosQuery = graphql(`
   query GetChannelVideos($channelId: ID!) {
@@ -35,10 +38,10 @@ const getChannelVideosQuery = graphql(`
 `)
 
 type VideoAssetUploadProps = {
-  channelId: string
+  channel: GetUserChannelsQuery['channels'][0]
 }
 
-export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
+export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channel }) => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [videoFile, setVideoFile] = useState<File | null>(null)
@@ -54,14 +57,17 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
 
   const selectId = useId()
 
+  const { wallet } = useJoystreamWallets()
+
   const {
     data: videosData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['channelVideos', channelId],
-    queryFn: () => request(QN_URL, getChannelVideosQuery, { channelId }),
-    enabled: !!channelId,
+    queryKey: ['channelVideos', channel.id],
+    queryFn: () =>
+      request(QN_URL, getChannelVideosQuery, { channelId: channel.id }),
+    enabled: !!channel.id,
   })
 
   const uploadMutation = useMutation({
@@ -70,17 +76,23 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
       channelId,
       thumbnailFile,
       videoFile,
+      signature,
+      timestamp,
     }: {
       videoId: string
       channelId: string
       thumbnailFile: File
       videoFile: File
+      signature: string
+      timestamp: number
     }) => {
       const formData = new FormData()
       formData.append('videoId', videoId)
       formData.append('channelId', channelId)
       formData.append('thumbnail', thumbnailFile)
       formData.append('media', videoFile)
+      formData.append('signature', `${signature}a`)
+      formData.append('timestamp', timestamp.toString())
 
       const xhr = new XMLHttpRequest()
       xhr.open('POST', 'http://localhost:3001/video')
@@ -147,20 +159,49 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedVideoId || !thumbnailFile || !videoFile) {
-      setUploadStatus('Please select a video, thumbnail, and video file.')
+      setUploadStatus('Please select both a video and thumbnail.')
       return
     }
 
     setUploadProgress(0)
-    setUploadStatus('Uploading...')
-    uploadMutation.mutate({
-      videoId: selectedVideoId,
-      channelId,
-      thumbnailFile,
-      videoFile,
-    })
+    setUploadStatus('Waiting for signature...')
+
+    try {
+      const payload = {
+        memberId: channel.ownerMember!.id,
+        appName: 'Joyutils Transcoder',
+        timestamp: Date.now(),
+        action: 'uploadAssets',
+        meta: {
+          videoId: selectedVideoId,
+        },
+      }
+      const signature = await wallet?.signer?.signRaw?.({
+        address: channel.ownerMember!.controllerAccount!,
+        data: u8aToHex(stringToU8a(JSON.stringify(payload))),
+        type: 'payload',
+      })
+
+      if (!signature) {
+        throw new Error('Failed to get signature')
+      }
+
+      setUploadStatus('Uploading...')
+
+      uploadMutation.mutate({
+        videoId: selectedVideoId,
+        channelId: channel.id,
+        thumbnailFile,
+        videoFile,
+        signature: signature.signature,
+        timestamp: payload.timestamp,
+      })
+    } catch (error) {
+      setUploadStatus(`Error signing transaction: ${(error as any).message}`)
+      return
+    }
   }
 
   if (isLoading) {
@@ -232,9 +273,16 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channelId }) => {
             />
           </div>
 
-          <Button onClick={handleSubmit} disabled={uploadMutation.isPending}>
-            {uploadMutation.isPending ? 'Uploading...' : 'Upload Assets'}
-          </Button>
+          <div>
+            <p className="text-sm text-gray-500 mb-2">
+              Before upload begins, you will be asked to sign a verification
+              message. This is required to verify your ownership of the channel.
+            </p>
+
+            <Button onClick={handleSubmit} disabled={uploadMutation.isPending}>
+              {uploadMutation.isPending ? 'Uploading...' : 'Upload assets'}
+            </Button>
+          </div>
 
           {uploadMutation.isPending && (
             <div className="space-y-2">

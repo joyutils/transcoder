@@ -3,6 +3,7 @@
 # Logs
 *.db
 uploads/
+data/
 .env
 
 logs

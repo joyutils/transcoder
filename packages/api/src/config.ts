@@ -1,12 +1,11 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-export const MAIN_UPLOADS_DIR = path.join(process.cwd(), "uploads");
-export const PENDING_PROCESSING_DIR = path.join(
-  MAIN_UPLOADS_DIR,
-  "pending-processing"
-);
-export const PENDING_UPLOAD_DIR = path.join(MAIN_UPLOADS_DIR, "pending-upload");
+export const DATA_DIR = path.join(process.cwd(), "data");
+export const DB_PATH = path.join(DATA_DIR, "sqlite.db");
+
+export const PENDING_PROCESSING_DIR = path.join(DATA_DIR, "pending-processing");
+export const PENDING_UPLOAD_DIR = path.join(DATA_DIR, "pending-upload");
 
 await mkdir(PENDING_PROCESSING_DIR, { recursive: true });
 await mkdir(PENDING_UPLOAD_DIR, { recursive: true });
