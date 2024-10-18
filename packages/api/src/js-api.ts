@@ -168,6 +168,8 @@ export async function prepareUpdateVideoTx(
 
   if (input.thumbnail) {
     properties.thumbnailPhoto = 0;
+
+    assetsRecord = await prepareAssetForExtrinsic(api, input.thumbnail);
   }
 
   const rawMetadata = ContentMetadata.encode({

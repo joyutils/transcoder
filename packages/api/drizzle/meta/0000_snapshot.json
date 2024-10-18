@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c51dddbe-7c89-42cb-8c5e-7d422ce83c81",
+  "id": "95d6bf3f-f1b4-45a0-b22f-8fbaf628bdf5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "jobs": {

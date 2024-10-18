@@ -36,19 +36,30 @@ export class ChainWorker extends Worker {
     this.log(`Processing job ${job.id}`);
 
     try {
+      const assetInfo =
+        job.fileType === "media"
+          ? {
+              media: {
+                size: job.processedFileSize!,
+                ipfsHash: job.hash!,
+                duration: job.duration!,
+                height: job.height!,
+                width: job.width!,
+                codec: "h264",
+                container: "mp4",
+                mimeType: "video/mp4",
+              },
+            }
+          : {
+              thumbnail: {
+                size: job.processedFileSize!,
+                ipfsHash: job.hash!,
+              },
+            };
       const tx = await prepareUpdateVideoTx(this.api, {
         videoId: job.video.id,
         channelId: job.video.channelId,
-        media: {
-          size: job.processedFileSize!,
-          ipfsHash: job.hash!,
-          duration: job.duration!,
-          height: job.height!,
-          width: job.width!,
-          codec: "h264",
-          container: "mp4",
-          mimeType: "video/mp4",
-        },
+        ...assetInfo,
       });
 
       if (!tx) {
