@@ -2,7 +2,7 @@ import { FC, useId, useState } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { graphql } from '@/gql'
 import { request } from 'graphql-request'
-import { QN_URL } from '@/config'
+import { API_URL, QN_URL } from '@/config'
 import { Loader2 } from 'lucide-react'
 import {
   Select,
@@ -95,7 +95,7 @@ export const UploadAssetsTab: FC<VideoAssetUploadProps> = ({ channel }) => {
       formData.append('timestamp', timestamp.toString())
 
       const xhr = new XMLHttpRequest()
-      xhr.open('POST', 'http://localhost:3001/video')
+      xhr.open('POST', `${API_URL}/video`)
 
       return new Promise<{ videoId: string }>((resolve, reject) => {
         xhr.upload.onprogress = (event) => {

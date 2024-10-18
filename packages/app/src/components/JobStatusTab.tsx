@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { API_URL } from '@/config'
 
 type JobStatus = {
   id: string
@@ -30,7 +31,7 @@ const SingleVideoJobStatus: FC<{ videoId: string }> = ({ videoId }) => {
   } = useQuery({
     queryKey: ['videoStatus', videoId],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3001/video/${videoId}`)
+      const response = await fetch(`${API_URL}/video/${videoId}`)
       if (!response.ok) {
         throw new Error('Failed to fetch video status')
       }
